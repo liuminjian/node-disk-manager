@@ -128,6 +128,9 @@ func (pe *ProbeEvent) deleteBlockDeviceEvent(msg controller.EventMessage) {
 			}
 			// use the new UUID for deactivating the blockdevice
 			device.UUID = uuid
+		} else if device.DeviceAttributes.DeviceType == libudevwrapper.UDEV_PARTITION {
+			klog.Info("GPTBasedUUID disabled. skip delete block device resource for partition.")
+			continue
 		}
 
 		existingBlockDeviceResource := pe.Controller.GetExistingBlockDeviceResource(bdAPIList, device.UUID)

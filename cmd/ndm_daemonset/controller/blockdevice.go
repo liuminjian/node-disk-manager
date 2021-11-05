@@ -85,6 +85,9 @@ func (di *DeviceInfo) getObjectMeta() metav1.ObjectMeta {
 	objectMeta.Labels[KubernetesHostNameLabel] = di.NodeAttributes[HostNameKey]
 	objectMeta.Labels[NDMDeviceTypeKey] = NDMDefaultDeviceType
 	objectMeta.Labels[NDMManagedKey] = TrueString
+	if len(di.NodeAttributes[NDMZpoolName]) > 0 {
+		objectMeta.Labels[NDMZpoolName] = di.NodeAttributes[NDMZpoolName]
+	}
 	return objectMeta
 }
 
