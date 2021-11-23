@@ -34,6 +34,7 @@ var RegisteredProbes = []func(){
 	udevProbeRegister,
 	sysfsProbeRegister,
 	usedbyProbeRegister,
+	megaRaidProbeRegister,
 }
 
 type registerProbe struct {
