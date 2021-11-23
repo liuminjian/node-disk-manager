@@ -33,7 +33,8 @@ LABEL org.label-schema.url=$DBUILD_SITE_URL
 #Copy binary to /usr/sbin/ndm
 COPY bin/${ARCH}/ndm /usr/sbin/ndm
 COPY build/ndm-daemonset/entrypoint.sh /usr/local/bin/entrypoint.sh
-
+COPY build/ndm-daemonset/storcli_1.18.11_all.deb /root/storcli_1.18.11_all.deb
+RUN dpkg -i /root/storcli_1.18.11_all.deb && rm -f /root/storcli_1.18.11_all.deb
 
 #Set the default command
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
