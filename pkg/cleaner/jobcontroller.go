@@ -23,14 +23,16 @@ package cleaner
 import (
 	"context"
 	"fmt"
-	"github.com/openebs/node-disk-manager/blockdevice"
-	"github.com/openebs/node-disk-manager/cmd/ndm_daemonset/controller"
-	"github.com/openebs/node-disk-manager/pkg/apis/openebs/v1alpha1"
+
 	batchv1 "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/openebs/node-disk-manager/blockdevice"
+	"github.com/openebs/node-disk-manager/cmd/ndm_daemonset/controller"
+	"github.com/openebs/node-disk-manager/pkg/apis/openebs/v1alpha1"
 )
 
 const (
@@ -83,8 +85,10 @@ func NewCleanupJob(bd *v1alpha1.BlockDevice, volMode VolumeMode, tolerations []v
 		// wipefs erases the filesystem signature from the block
 		// -a    wipe all magic strings
 		// -f    force erasure
-		args := fmt.Sprintf("(fdisk -o Device -l %s | grep \"^%s\" | xargs -I '{}' wipefs -fa '{}') && wipefs -fa %s && partprobe %s",
-			bd.Spec.Path, bd.Spec.Path, bd.Spec.Path, bd.Spec.Path)
+		args := fmt.Sprintf(""+
+			"(pvs -o pv_name,vg_name|grep %s|awk '{print $2}'|xargs -I {} sh -c 'dmsetup info -c -o name --noheadings|grep ^{}- |xargs -t -I {} dmsetup remove {} ') && "+
+			"(fdisk -o Device -l %s | grep \"^%s\" | xargs -I '{}' wipefs -fa '{}') && wipefs -fa %s && partprobe %s",
+			bd.Spec.Path, bd.Spec.Path, bd.Spec.Path, bd.Spec.Path, bd.Spec.Path)
 
 		jobContainer.Args = []string{args}
 
